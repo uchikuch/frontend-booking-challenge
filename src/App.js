@@ -1,11 +1,11 @@
 import React from "react";
-import BookingForm from "./components/BookingForm";
+import BookingList from "./components/BookingList";
 
 function App() {
   return (
     <div style={{ margin: "1rem" }}>
       <h1>Booking Challenge</h1>
-      <BookingForm />
+      <BookingList />
     </div>
   );
 }
