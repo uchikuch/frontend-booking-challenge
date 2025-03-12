@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Search from "./Search";
 
 // Mocked booking data (pretend it's from an API)
 const fetchBookings = async () => {
@@ -29,12 +30,14 @@ const fetchBookings = async () => {
 
 function BookingList() {
   const [bookings, setBookings] = useState([]);
+  const [filteredBookings, setFilteredBookings] = useState([])
 
   useEffect(() => {
     const getData = async () => {
       try {
         const data = await fetchBookings();
-        setBookings([]);
+        setBookings(data);
+        setFilteredBookings(data)
       } catch (error) {
         console.error("Error fetching bookings:", error);
       }
@@ -43,26 +46,46 @@ function BookingList() {
   }, []);
 
   const markAsCompleted = (bookingId) => {
-    setBookings(bookings);
+    const bookingData = bookings.map((booking) => {
+      if (booking.id === bookingId) {
+        booking.status = "Completed";
+        return booking;
+      } else {
+        return booking;
+      }
+    });
+    setBookings(bookingData);
+    setFilteredBookings(bookingData)
+  };
+
+  const handleSearch = (name) => {
+    if (name.trim() === "") {
+      setFilteredBookings(bookings);
+    } else {
+      const bookingData = bookings.filter((booking) => booking.studentName.toLowerCase().includes(name.toLowerCase()));
+      setFilteredBookings(bookingData);
+    }
   };
 
   return (
     <div>
       <h2>Upcoming Bookings</h2>
 
+      <Search onSearch={handleSearch} />
+
       {/* Table of bookings */}
       <table border="1" cellPadding="8" style={{ borderCollapse: "collapse" }}>
         <thead>
           <tr>
-            <th>Student Name</th>
+            <th>Name</th>
             <th>Date/Time</th>
             <th>Status</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          {bookings.length > 0 ? (
-            bookings.map((booking) => (
+          {filteredBookings.length > 0 ? (
+            filteredBookings.map((booking) => (
               <tr key={booking.id}>
                 <td>{booking.studentName}</td>
                 <td>{new Date(booking.dateTime).toLocaleString()}</td>
